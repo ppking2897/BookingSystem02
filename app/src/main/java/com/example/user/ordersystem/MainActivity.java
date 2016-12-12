@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity
     View.OnClickListener clickListener = new View.OnClickListener(){
         public void onClick(View v){
             Intent it = new Intent();
-            it.setClass(MainActivity.this,LoginActivity.class);
+            it.setClass(MainActivity.this,SeatPage.class);
             startActivity(it);
             finish();
         }
