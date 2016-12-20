@@ -3,17 +3,16 @@ package com.example.user.ordersystem;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class SeatPage extends AppCompatActivity {
     Button[] btns = new Button[10];
@@ -23,6 +22,8 @@ public class SeatPage extends AppCompatActivity {
     private TextView textTime;
     private DatePickerDialog datePickerDialog;
     private TimePickerDialog timePickerDialog;
+
+    private TextView tableNmb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +74,7 @@ public class SeatPage extends AppCompatActivity {
         doSetTime = (Button)findViewById(R.id.buttonTime);
         textDate = (TextView)findViewById(R.id.datetext);
         textTime = (TextView)findViewById(R.id.timetext);
+        tableNmb = (TextView)findViewById(R.id.tableNmb);
     }
 
     //日期視窗
@@ -102,7 +104,11 @@ public class SeatPage extends AppCompatActivity {
                 btns[i].setBackgroundColor(getResources().getColor(R.color.colorWhite));
             }
             v.setBackgroundColor(getResources().getColor(R.color.colorOrange));
+            //顯示桌號 tableNmb
+            
         }
     };
+
+
 
 }
