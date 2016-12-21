@@ -33,12 +33,12 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener
         {
-            //---------------FB---------------------
+
             private LoginButton loginButton;
             private CallbackManager callbackManager;
             LoginManager lmg;
             private ProfileTracker profileTracker;
-            private String loginState , logout = "Log out", logout2 = "登出" , loginID;
+            private String loginID;
             private int count;
 
 
@@ -123,9 +123,11 @@ public class MainActivity extends AppCompatActivity
                                     mu.addFormField("seatIdNumber", "0");
                                     mu.addFormField("checkOut", "0");
                                     List<String> ret = mu.finish();
+                                    Log.v("ppking","ret" + ret);
                                     Log.v("ppking","profileTracker" + loginID);
-                                    Intent it = new Intent(MainActivity.this,SeatPage.class);
+                                    Intent it = new Intent(MainActivity.this,MyService.class);
                                     it.putExtra("ppking" ,loginID);
+                                    startService(it);
                                 }
                             } catch (Exception e) {
                                 Log.v("ppking", "DB Error:" + e.toString());
@@ -146,6 +148,9 @@ public class MainActivity extends AppCompatActivity
         //Log.v("ppking" , "onActivityResult");
     }
     //--------------end---------------------------
+
+
+
 
     @Override
     public void onBackPressed() {

@@ -2,7 +2,10 @@ package com.example.user.ordersystem;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -39,6 +42,8 @@ public class SeatPage extends AppCompatActivity {
     private String SeatState1 , SeatState2 , SeatState3 , SeatState4 , SeatState5 , SeatState6,
                    SeatState7 , SeatState8 , SeatState9 , SeatState0;
     private String loginId;
+    private MyReceiver myReceiver;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,20 +73,27 @@ public class SeatPage extends AppCompatActivity {
         for (int i = 0; i < 10; i++) {
             btns[i].setOnClickListener(clickListener);}
 
-        //從資料庫提取資料
+        //---------DATA BASE-----------
+        pullData();
         uiHandler = new UIHandler();
-        Intent it = getIntent();
-        loginId = it.getStringExtra("ppking");
-        Log.v("ppking" , "loginidseat : " + loginId);
-        pushData();
+        //---------從Service提取資料---------
+        myReceiver = new MyReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("test");
+        registerReceiver(myReceiver,intentFilter);
+
+
 
     }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Intent it = new Intent(SeatPage.this,MyService.class);
+        startService(it);
+    }
 
-
-
-
-//找View By ID
+    //找View By ID
     public void doFindView(){
 
 
@@ -150,6 +162,13 @@ public class SeatPage extends AppCompatActivity {
 
 
 
+
+
+
+
+
+//---------------------DATA BASE-----------------------
+
     //提取資料
     public void pullData(){
 
@@ -180,9 +199,10 @@ public class SeatPage extends AppCompatActivity {
 
                     MultipartUtility mu = new MultipartUtility("https://android-test-db-ppking2897.c9users.io/DataBase/AccountUpload02.php", "UTF-8");
                     if(count<2) {
-                        mu.addFormField("accountId", loginId);
-                        mu.addFormField("resdate", "0");
-                        mu.addFormField("restime", "0");
+                        mu.addFormField("accountid", loginId);
+                        mu.addFormField("resdate", textDate.getText().toString());
+                        mu.addFormField("restime", textTime.getText().toString());
+                        mu.addFormField("seatidnumber",tableNumber);
                         List<String> ret = mu.finish();
                         Log.v("ppking", "ret update:: " + ret);
                     }
@@ -250,4 +270,14 @@ public class SeatPage extends AppCompatActivity {
             }
         }
     }
+    private class MyReceiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //-----------從Service提取資料
+            loginId = intent.getStringExtra("ppking");
+            Log.v("ppking" , "loginId" + loginId);
+        }
+    }
+
+    //------------------------------END----------------------------------------------------------
 }
