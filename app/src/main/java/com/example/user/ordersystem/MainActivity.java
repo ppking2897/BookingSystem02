@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity
         loginButton.setReadPermissions("email");
 
 
+        
 
         lmg.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
