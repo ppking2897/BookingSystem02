@@ -4,15 +4,22 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
+import java.util.List;
 
 public class SeatPage extends AppCompatActivity {
     Button[] btns = new Button[10];
@@ -26,6 +33,12 @@ public class SeatPage extends AppCompatActivity {
     private TextView tableNmb;
     private String tableNumber;
 
+    //----------------------------------
+    private int count;
+    private UIHandler uiHandler;
+    private String SeatState1 , SeatState2 , SeatState3 , SeatState4 , SeatState5 , SeatState6,
+                   SeatState7 , SeatState8 , SeatState9 , SeatState0;
+    private String loginId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,8 +69,18 @@ public class SeatPage extends AppCompatActivity {
             btns[i].setOnClickListener(clickListener);}
 
         //從資料庫提取資料
+        uiHandler = new UIHandler();
+        Intent it = getIntent();
+        loginId = it.getStringExtra("ppking");
+        Log.v("ppking" , "loginidseat : " + loginId);
+        pushData();
 
     }
+
+
+
+
+
 //找View By ID
     public void doFindView(){
 
@@ -113,6 +136,7 @@ public class SeatPage extends AppCompatActivity {
         public void onClick(View v){
             Intent it = new Intent();
             it.setClass(SeatPage.this,SuccessPage.class);
+            pushData();
             startActivity(it);
             finish();
 
@@ -123,4 +147,107 @@ public class SeatPage extends AppCompatActivity {
 
     //
     //桌號資料變數> tableNumber
+
+
+
+    //提取資料
+    public void pullData(){
+
+        new Thread(){
+            @Override
+            public void run() {
+                try {
+
+                    MultipartUtility mu = new MultipartUtility("https://android-test-db-ppking2897.c9users.io/DataBase/SeatQuery02.php", "UTF-8");
+                    List<String> ret = mu.finish();
+
+                    parseJSON(ret.toString());
+
+
+                } catch (Exception e) {
+                    Log.v("ppking", "DB Error:" + e.toString());
+                }
+            }
+        }.start();
+    }
+    public void pushData(){
+
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    count++;
+
+                    MultipartUtility mu = new MultipartUtility("https://android-test-db-ppking2897.c9users.io/DataBase/AccountUpload02.php", "UTF-8");
+                    if(count<2) {
+                        mu.addFormField("accountId", loginId);
+                        mu.addFormField("resdate", "0");
+                        mu.addFormField("restime", "0");
+                        List<String> ret = mu.finish();
+                        Log.v("ppking", "ret update:: " + ret);
+                    }
+                } catch (Exception e) {
+                    Log.v("ppking", "DB Error:" + e.toString());
+                }
+            }
+        }.start();
+    }
+
+
+
+    //接收JSON格式並且找特定字串
+    private void parseJSON(String json){
+        LinkedList accountInfo = new LinkedList<>();
+        try{
+
+//            JSONObject jsonObject = new JSONArray(json).getJSONObject(0);
+            JSONArray jsonArray = new JSONArray(json).getJSONArray(0);
+            for(int i = 0 ; i <=9 ; i++ ) {
+                String stringNo = jsonArray.getString(i);
+                accountInfo.add(stringNo);
+//                String stringNo1 = jsonArray.getString(1);
+//                accountInfo.add(stringNo1);
+            }
+
+            Message mesg = new Message();
+            Bundle data = new Bundle();
+            for (int i = 0 ; i<=9 ; i++) {
+                data.putCharSequence("data"+i, accountInfo.get(i).toString());
+//            data.putCharSequence("data1", accountInfo.get(1).toString());
+//            data.putCharSequence("data2",accountInfo.get(2).toString());
+            }
+            mesg.setData(data);
+            mesg.what=0;
+            uiHandler.sendMessage(mesg);
+
+
+        }catch (Exception e){
+            Log.v("ppking", "Error : " + e.toString());
+        }
+    }
+    //由handler這邊將資料丟到前景UI
+    private class UIHandler extends android.os.Handler{
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what){
+                case 0 :
+//                    textView.setText("Accound : "+msg.getData().getCharSequence("data0")+"\n");
+//                    textView.append("SeatIdNumber : "+msg.getData().getCharSequence("data1")+"\n");
+//                    textView.append("Checkout : $"+msg.getData().getCharSequence("data2")+"\n");
+                    //TODO:各座位的狀態，去判斷座位
+                    SeatState0 = msg.getData().getCharSequence("data0").toString();
+                    SeatState1 = msg.getData().getCharSequence("data1").toString();
+                    SeatState2 = msg.getData().getCharSequence("data2").toString();
+                    SeatState3 = msg.getData().getCharSequence("data3").toString();
+                    SeatState4 = msg.getData().getCharSequence("data4").toString();
+                    SeatState5 = msg.getData().getCharSequence("data5").toString();
+                    SeatState6 = msg.getData().getCharSequence("data6").toString();
+                    SeatState7 = msg.getData().getCharSequence("data7").toString();
+                    SeatState8 = msg.getData().getCharSequence("data8").toString();
+                    SeatState9 = msg.getData().getCharSequence("data9").toString();
+                    break;
+            }
+        }
+    }
 }
