@@ -24,6 +24,7 @@ public class SeatPage extends AppCompatActivity {
     private TimePickerDialog timePickerDialog;
 
     private TextView tableNmb;
+    private String tableNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +52,15 @@ public class SeatPage extends AppCompatActivity {
         Button button = (Button)findViewById(R.id.goSuccessPage);
         button.setOnClickListener(clickListenerGo);
 
+        for (int i = 0; i < 10; i++) {
+            btns[i].setOnClickListener(clickListener);}
+
+        //從資料庫提取資料
+
+    }
+//找View By ID
+    public void doFindView(){
+
 
         btns[0] = (Button)findViewById(R.id.b0);
         btns[1] = (Button)findViewById(R.id.b1);
@@ -64,12 +74,6 @@ public class SeatPage extends AppCompatActivity {
         btns[9] = (Button)findViewById(R.id.b9);
 
 
-        for (int i = 0; i < 10; i++) {
-            btns[i].setOnClickListener(clickListener);}
-
-    }
-//找View By ID
-    public void doFindView(){
         doSetDate = (Button)findViewById(R.id.buttonDate);
         doSetTime = (Button)findViewById(R.id.buttonTime);
         textDate = (TextView)findViewById(R.id.datetext);
@@ -86,15 +90,6 @@ public class SeatPage extends AppCompatActivity {
         timePickerDialog.show();
     }
 
-    //移動按鈕
-    View.OnClickListener clickListenerGo = new View.OnClickListener(){
-        public void onClick(View v){
-            Intent it = new Intent();
-            it.setClass(SeatPage.this,SuccessPage.class);
-            startActivity(it);
-            finish();
-        }
-    };
 
     //位置按鈕
     View.OnClickListener clickListener = new View.OnClickListener() {
@@ -105,10 +100,27 @@ public class SeatPage extends AppCompatActivity {
             }
             v.setBackgroundColor(getResources().getColor(R.color.colorOrange));
             //顯示桌號 tableNmb
-            
+            Button b = (Button) v;
+            tableNumber = b.getText().toString();
+            tableNmb.setText("你選擇了 " + tableNumber + "號桌");
+
         }
     };
 
 
+    //移動按鈕&上傳資料
+    View.OnClickListener clickListenerGo = new View.OnClickListener(){
+        public void onClick(View v){
+            Intent it = new Intent();
+            it.setClass(SeatPage.this,SuccessPage.class);
+            startActivity(it);
+            finish();
 
+            //上傳資料
+
+        }
+    };
+
+    //
+    //桌號資料變數> tableNumber
 }
